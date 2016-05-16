@@ -53,7 +53,7 @@ int8_t I2C::readByte(uint8_t addr, uint8_t reg, uint8_t *container) {
  */
 int8_t I2C::readBytes(uint8_t addr, uint8_t reg, uint8_t N, uint8_t *container) {
     #ifdef DEBUG
-        Serial.print("reading");
+        Serial.print("reading ");
         Serial.print(N, DEC);
         Serial.print(" bytes from (0x");
         Serial.print(reg, HEX);
@@ -70,14 +70,16 @@ int8_t I2C::readBytes(uint8_t addr, uint8_t reg, uint8_t N, uint8_t *container) 
     Wire.beginTransmission(addr);
     Wire.requestFrom(addr, N);
 
-    while (Wire.available()) {
-        count++;
+    while( Wire.available() ) {
         container[count] = Wire.read();
+        count++;
         #ifdef DEBUG
             Serial.print(container[count], HEX);
             if (count + 1 < N) Serial.print("; ");
             else Serial.println();
+            delay(1000);
         #endif
+
     }
 
     Wire.endTransmission();
@@ -96,7 +98,7 @@ int8_t I2C::readBytes(uint8_t addr, uint8_t reg, uint8_t N, uint8_t *container) 
 \*===========================================================*/
 
 /*
-*  Description: écrit N bits dans reg à la position index
+*  Description: write N bits to the register at index pos
 *  --------------------------------------------------------------
 *  addr: device's address
 *  reg: register to write to
@@ -157,9 +159,9 @@ bool I2C::writeByte(uint8_t addr, uint8_t reg, uint8_t value) {
  */
 bool I2C::writeBytes(uint8_t addr, uint8_t reg, uint8_t N, uint8_t* value) {
     #ifdef DEBUG
-        Serial.print("writing");
+        Serial.print("writing ");
         Serial.print(N, DEC);
-        Serial.print(" bytes from (0x");
+        Serial.print(" bytes to (0x");
         Serial.print(reg, HEX);
         Serial.print(") of (0x");
         Serial.print(addr, HEX);
@@ -167,21 +169,19 @@ bool I2C::writeBytes(uint8_t addr, uint8_t reg, uint8_t N, uint8_t* value) {
     #endif
 
     Wire.beginTransmission(addr);
-    Wire.write((uint8_t) reg);
+    Wire.write(reg);
 
     for (uint8_t i = 0; i < N; i++) {
-        Wire.write((uint8_t) value[i]);
+        Wire.write(value[i]);
 
-        //BEGIN debug
+        #ifdef DEBUG
             Serial.print(value[i], HEX);
             if (i + 1 < N) Serial.print(" ");
             else Serial.println();
-        //END debug
+        #endif
     }
 
     uint8_t status = Wire.endTransmission(); //https://www.arduino.cc/en/Reference/WireEndTransmission
-
-    Serial.println("Done.");//debug
 
     return status == 0; //true si succès
 }
