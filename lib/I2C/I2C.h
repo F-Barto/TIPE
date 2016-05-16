@@ -7,7 +7,7 @@
     #include "Arduino.h"
     #include <Wire.h>
 
-    #define DEBUG
+    //#define DEBUG
 
     /*
      *  Description: this class will hold functions for I2C communication
